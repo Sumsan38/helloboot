@@ -19,9 +19,8 @@ public class HellobootApplication {
 	public static void main(String[] args) {
 		GenericApplicationContext applicationContext = new GenericApplicationContext();
 		applicationContext.registerBean(HelloController.class);		// 빈으로 등록함
+		applicationContext.registerBean(SimpleHelloService.class);	// 어떤 클래스를 가지고 빈을 만들건지 지정 -> HelloController에서 생성자로 등록
 		applicationContext.refresh();								// 빈 오브젝트를 만든다
-
-
 
 		ServletWebServerFactory serverFactory = new TomcatServletWebServerFactory();
 		WebServer webServer = serverFactory.getWebServer(servletContext -> {
