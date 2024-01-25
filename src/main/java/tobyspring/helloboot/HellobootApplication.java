@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.http.HttpHeaders;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,10 +17,14 @@ import java.io.IOException;
 public class HellobootApplication {
 
 	public static void main(String[] args) {
+		GenericApplicationContext applicationContext = new GenericApplicationContext();
+		applicationContext.registerBean(HelloController.class);		// 빈으로 등록함
+		applicationContext.refresh();								// 빈 오브젝트를 만든다
+
+
+
 		ServletWebServerFactory serverFactory = new TomcatServletWebServerFactory();
 		WebServer webServer = serverFactory.getWebServer(servletContext -> {
-			HelloController helloController = new HelloController();
-
 			servletContext.addServlet("frontController", new HttpServlet() {
 					@Override
 					protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -29,15 +33,12 @@ public class HellobootApplication {
 							// "/hello"와 GET 메소드일 경우만 처리
 							String name = req.getParameter("name");
 
+							HelloController helloController = applicationContext.getBean(HelloController.class);	// class로 get 가능
 							String ret = helloController.hello(name);	// helloController 안에서 로직이 동작 // "바인딩"
 
 							// http 3요소 - 상태 코드, 헤더, 바디
-							resp.setStatus(HttpStatus.OK.value());
-							resp.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
+							resp.setContentType(MediaType.TEXT_PLAIN_VALUE);
 							resp.getWriter().println(ret);
-						}
-						else if(req.getRequestURI().equals("/user")) {
-							// 다른 url 처리
 						}
 						else {
 							resp.setStatus(HttpStatus.NOT_FOUND.value());
