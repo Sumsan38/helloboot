@@ -17,6 +17,7 @@ public class HellobootApplication {
 		ServletWebServerFactory serverFactory = new TomcatServletWebServerFactory();
 		WebServer webServer = serverFactory.getWebServer(servletContext -> {
 			servletContext.addServlet("dispatcherServlet",
+						// 원래 url과 mehtod 별로 프론트 컨트롤러에 매핑시켜줘야 했었지만, dispatcherServlet + controller에 annotation 기재만으로 코드가 간결해졌다.
 						new DispatcherServlet(applicationContext)		// 그러나 현재는 서블릿에 어떤 요청이 어떻게 들어간다는 힌트가 없기 떄문에, 요청을 보내도 404이 뜬다.
 					).addMapping("/*");
 		});
