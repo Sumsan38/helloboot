@@ -1,19 +1,23 @@
 package tobyspring.helloboot;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
-//@Component          // 이 클래스가 스프링 컨테이너에 들어가는 컨테이너라고 선언
 @MyComponent
 @RestController
 public class HelloController {
 
     private final HelloService helloService;
+    private final ApplicationContext applicationContext;
 
-    public HelloController(HelloService helloService) {
+    public HelloController(HelloService helloService, ApplicationContext applicationContext) {
         this.helloService = helloService;
+        this.applicationContext = applicationContext;
+
+        System.out.println(applicationContext);
     }
 
     @GetMapping("/hello")
