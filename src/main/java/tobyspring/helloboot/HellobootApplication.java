@@ -3,29 +3,40 @@ package tobyspring.helloboot;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+@Configuration
 public class HellobootApplication {
 
+	@Bean
+	public HelloController helloController(HelloService helloService){
+		return new HelloController(helloService);
+	}
+
+	@Bean
+	public HelloService helloService(){
+		return new SimpleHelloService();
+	}
+
 	public static void main(String[] args) {
-		GenericWebApplicationContext applicationContext = new GenericWebApplicationContext() {
+		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext() {
 			@Override
 			protected void onRefresh() {
 				super.onRefresh();
 
-				// 1. dispatcherServlet를 context가 만들어지는 시점에 같이 초기화를 진행하고 싶다
 				ServletWebServerFactory serverFactory = new TomcatServletWebServerFactory();
 				WebServer webServer = serverFactory.getWebServer(servletContext -> {
 					servletContext.addServlet("dispatcherServlet",
-							new DispatcherServlet(this)		// 2. 현재 새로 Override 시도하고 있는 applicationContext 세팅
+							new DispatcherServlet(this)
 					).addMapping("/*");
 				});
 				webServer.start();
 			}
 		};
-		applicationContext.registerBean(HelloController.class);
-		applicationContext.registerBean(SimpleHelloService.class);
+		applicationContext.register(HellobootApplication.class);	// 자바 코드로 된 구성 정보(configuration) class를 등록 해줘야 한다
 		applicationContext.refresh();
 	}
 }
