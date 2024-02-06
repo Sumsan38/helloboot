@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
+//@Component          // 이 클래스가 스프링 컨테이너에 들어가는 컨테이너라고 선언
+@MyComponent
 @RestController
 public class HelloController {
 
